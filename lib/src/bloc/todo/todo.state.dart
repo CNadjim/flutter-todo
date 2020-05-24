@@ -1,25 +1,23 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_todo/src/model/todo.dart';
 
-abstract class TodoState extends Equatable {
+abstract class TodoState {
   const TodoState();
-
-  @override
-  List<Object> get props => [];
 }
 
-class TodoLoadInProgress extends TodoState {}
+class TodoLoading extends TodoState {}
 
-class TodoLoadSuccess extends TodoState {
+class TodoReady extends TodoState {
   final List<Todo> todoList;
 
-  const TodoLoadSuccess(this.todoList);
+  const TodoReady(this.todoList);
 
   @override
-  List<Object> get props => [todoList];
-
-  @override
-  String toString() => 'TodoLoadSuccess { todoList: $todoList }';
+  String toString() => 'TodoLoaded { todoList: $todoList }';
 }
 
-class TodoLoadFailure extends TodoState {}
+class TodoFailed extends TodoState {
+  final Error error;
+
+  const TodoFailed(this.error);
+}

@@ -12,72 +12,72 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   TodoBloc({@required this.repository});
 
   @override
-  TodoState get initialState => TodoLoadInProgress();
+  TodoState get initialState => TodoLoading();
 
   @override
   Stream<TodoState> mapEventToState(TodoEvent event) async* {
-    switch(event.runtimeType){
-      case TodoLoading:    yield* _mapTodoLoadedToState(); break;
-      case TodoAdded:      yield* _mapTodoAddedToState(event); break;
-      case TodoUpdated:    yield* _mapTodoUpdatedToState(event); break;
-      case TodoDeleted:    yield* _mapTodoDeletedToState(event); break;
-      case ToggleAll:      yield* _mapToggleAllToState(); break;
-      case ClearCompleted: yield* _mapClearCompletedToState();  break;
-    }
+      switch(event.runtimeType){
+        case LoadTodo:            yield* executeLoadTodo(event);                break;
+        case AddTodo:             yield* executeAddTodo(event);                 break;
+        case UpdateTodo:          yield* executeUpdateTodo(event);              break;
+        case DeleteTodo:          yield* executeDeleteTodo(event);              break;
+        case ToggleAllTodo:       yield* executeToggleAllTodo(event);           break;
+        case ClearCompletedTodo:  yield* executeClearCompletedlTodo(event);     break;
+      }
   }
 
-  Stream<TodoState> _mapTodoLoadedToState() async* {
+  Stream<TodoState> executeLoadTodo(LoadTodo event) async* {
     try {
       final todoList = await this.repository.loadTodoList();
-      yield TodoLoadSuccess(todoList);
-    } catch (e) {
-      print(e.toString());
-      yield TodoLoadFailure();
+      yield TodoReady(todoList);
+    } catch (error) {
+      yield TodoFailed(error);
     }
   }
 
-  Stream<TodoState> _mapTodoAddedToState(TodoAdded event) async* {
-    if (state is TodoLoadSuccess) {
-      final List<Todo> updatedTodo = List.from((state as TodoLoadSuccess).todoList)..add(event.todo);
-      yield TodoLoadSuccess(updatedTodo);
-      _saveTodo(updatedTodo);
-    }
+  Stream<TodoState> executeAddTodo(AddTodo event) async* {
+    assert (stateIsReady());
+    final List<Todo> updatedTodo = List.from((state as TodoReady).todoList)..add(event.todo);
+    yield TodoReady(updatedTodo);
+    saveTodo(updatedTodo);
   }
 
-  Stream<TodoState> _mapTodoUpdatedToState(TodoUpdated event) async* {
-    if (state is TodoLoadSuccess) {
-      final List<Todo> updatedTodo = (state as TodoLoadSuccess).todoList.map((todo) => (todo.id == event.todo.id)  ? event.todo : todo ).toList();
-      yield TodoLoadSuccess(updatedTodo);
-      _saveTodo(updatedTodo);
-    }
+  Stream<TodoState> executeUpdateTodo(UpdateTodo event) async* {
+    assert (stateIsReady());
+    final List<Todo> updatedTodo = (state as TodoReady).todoList.map((todo) => (todo.id == event.todo.id)  ? event.todo : todo ).toList();
+    yield TodoReady(updatedTodo);
+    saveTodo(updatedTodo);
+    
   }
 
-  Stream<TodoState> _mapTodoDeletedToState(TodoDeleted event) async* {
-    if (state is TodoLoadSuccess) {
-      final updatedTodo = (state as TodoLoadSuccess).todoList.where((todo) => todo.id != event.todo.id).toList();
-      yield TodoLoadSuccess(updatedTodo);
-      _saveTodo(updatedTodo);
-    }
+  Stream<TodoState> executeDeleteTodo(DeleteTodo event) async* {
+    assert (stateIsReady());
+    final updatedTodo = (state as TodoReady).todoList.where((todo) => todo.id != event.todo.id).toList();
+    yield TodoReady(updatedTodo);
+    saveTodo(updatedTodo);
   }
 
-  Stream<TodoState> _mapToggleAllToState() async* {
-    if (state is TodoLoadSuccess) {
-      final allComplete = (state as TodoLoadSuccess).todoList.every((todo) => todo.completed);
-      final List<Todo> updatedTodo = (state as TodoLoadSuccess).todoList.map((todo) => todo.copyWith(completed: !allComplete)).toList();
-      yield TodoLoadSuccess(updatedTodo);
-      _saveTodo(updatedTodo);
-    }
+  Stream<TodoState> executeToggleAllTodo(ToggleAllTodo event) async* {
+    assert (stateIsReady());
+    final allComplete = (state as TodoReady).todoList.every((todo) => todo.completed);
+    final List<Todo> updatedTodo = (state as TodoReady).todoList.map((todo) => todo.copyWith(completed: !allComplete)).toList();
+    yield TodoReady(updatedTodo);
+    saveTodo(updatedTodo);
+
   }
 
-  Stream<TodoState> _mapClearCompletedToState() async* {
-    if (state is TodoLoadSuccess) {
-      final List<Todo> updatedTodo = (state as TodoLoadSuccess).todoList.where((todo) => !todo.completed).toList();
-      yield TodoLoadSuccess(updatedTodo);
-      _saveTodo(updatedTodo);
-    }
+  Stream<TodoState> executeClearCompletedlTodo(ClearCompletedTodo event) async* {
+    assert (stateIsReady());
+    final List<Todo> updatedTodo = (state as TodoReady).todoList.where((todo) => !todo.completed).toList();
+    yield TodoReady(updatedTodo);
+    saveTodo(updatedTodo);
   }
 
-  Future<void> _saveTodo(List<Todo> todoList) {
+  Future<void> saveTodo(List<Todo> todoList) {
     return repository.saveTodoList(todoList);
+  }
+
+  bool stateIsReady(){
+    return (state is TodoReady);
   }
 }

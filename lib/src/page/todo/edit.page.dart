@@ -2,11 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_todo/src/model/todo.dart';
 
-typedef OnSaveCallback = Function(String todo);
-
 class EditPage extends StatefulWidget {
   final Todo todo;
-  final OnSaveCallback onSave;
+  final Function(String todo) onSave;
 
   EditPage({
     Key key,
@@ -20,7 +18,7 @@ class EditPage extends StatefulWidget {
 
 class _AddEditPageState extends State<EditPage> {
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String todo;
+  String task;
 
   @override
   Widget build(BuildContext context) {
@@ -35,26 +33,22 @@ class _AddEditPageState extends State<EditPage> {
           child: ListView(
             children: [
               TextFormField(
-                initialValue: widget.todo.todo,
-                key: null,
-                autofocus: true,
-                validator: (val) {
-                  return val.trim().isEmpty ? "Il manque pas un truc là ?" : null;
-                },
-                onSaved: (value) => todo = value,
+                initialValue:   widget.todo.todo,
+                autofocus:      true,
+                validator:      (value) =>  value.trim().isEmpty ? "Il manque pas un truc là ?" : null,
+                onSaved:        (value) => task = value,
               )
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        key: null,
         tooltip: "Sauvegarder",
         child: Icon(Icons.check),
         onPressed: () {
           if (_formKey.currentState.validate()) {
             _formKey.currentState.save();
-            widget.onSave(todo);
+            widget.onSave(task);
             Navigator.pop(context);
           }
         },

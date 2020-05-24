@@ -19,8 +19,9 @@ class App extends StatelessWidget {
         return EditPage(
             key: null,
             onSave: (todo) {
-              BlocProvider.of<TodoBloc>(context)
-                  .add(TodoUpdated(Todo(todo: todo)));
+              BlocProvider.of<TodoBloc>(context).add(
+                  UpdateTodo(Todo(todo: todo))
+              );
             });
       }
     });

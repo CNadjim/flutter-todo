@@ -30,7 +30,7 @@ class TodoItem extends StatelessWidget {
                 color: Colors.white,
               ),
               SizedBox(width: 5),
-              Text("Delete")
+              Text("Supprimer la tâche")
             ],
           )
       ),
@@ -45,7 +45,7 @@ class TodoItem extends StatelessWidget {
                   color: Colors.white,
                 ),
                 SizedBox(width: 5),
-                Text("Update")
+                Text("Editer la tâche")
               ]
           )
       ),

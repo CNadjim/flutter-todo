@@ -9,7 +9,7 @@ class Todo {
 
   Todo.empty() {
     this.id = Uuid().v4();
-    this.todo = "Empty todo task";
+    this.todo = "Swipez vers la gauche pour modifier la tâche";
     this.completed = false;
   }
 
@@ -34,4 +34,7 @@ class Todo {
       "id": id,
     };
   }
+
+  @override
+  String toString() => '{ id: $id, todo: $todo, completed: $completed}';
 }
