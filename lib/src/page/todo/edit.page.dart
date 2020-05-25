@@ -1,42 +1,55 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_todo/src/bloc/todo/todo.event.dart';
+import 'package:flutter_todo/src/bloc/todo/todos.bloc.dart';
 import 'package:flutter_todo/src/model/todo.dart';
 
 class EditPage extends StatefulWidget {
   final Todo todo;
-  final Function(String todo) onSave;
 
-  EditPage({
-    Key key,
-    this.todo,
-    this.onSave
-  });
+  EditPage({this.todo});
 
   @override
-  _AddEditPageState createState() => _AddEditPageState();
+  EditPageState createState() => EditPageState();
 }
 
-class _AddEditPageState extends State<EditPage> {
-  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String task;
+class EditPageState extends State<EditPage> {
+  final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
+  final controller = new TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    this.controller.text = widget.todo.todo;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Edition du todo")
+        title: Text("Edition de la tâche")
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Form(
-          key: _formKey,
+          key: formKey,
           child: ListView(
             children: [
               TextFormField(
-                initialValue:   widget.todo.todo,
+                controller: controller,
                 autofocus:      true,
-                validator:      (value) =>  value.trim().isEmpty ? "Il manque pas un truc là ?" : null,
-                onSaved:        (value) => task = value,
+                validator:      (value) => value.trim().isEmpty ? "Il manque pas un truc là ?" : null,
+                onChanged: (value) => setState(() => null),
+                decoration: InputDecoration(
+                    hintText: 'Detail de la tâche',
+                    filled: true,
+                    suffixIcon: controller.text.isNotEmpty ? IconButton(icon: Icon(Icons.clear), onPressed: () => setState(() => controller.clear())) : null)
               )
             ],
           ),
@@ -46,9 +59,9 @@ class _AddEditPageState extends State<EditPage> {
         tooltip: "Sauvegarder",
         child: Icon(Icons.check),
         onPressed: () {
-          if (_formKey.currentState.validate()) {
-            _formKey.currentState.save();
-            widget.onSave(task);
+          if (formKey.currentState.validate()) {
+            formKey.currentState.save();
+            BlocProvider.of<TodoBloc>(context).add(UpdateTodo(Todo().copyWith(id : widget.todo.id, completed: widget.todo.completed, todo: controller.value.text )));
             Navigator.pop(context);
           }
         },

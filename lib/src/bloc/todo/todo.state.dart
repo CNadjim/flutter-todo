@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_todo/src/model/todo.dart';
 
 abstract class TodoState {
@@ -9,11 +8,13 @@ class TodoLoading extends TodoState {}
 
 class TodoReady extends TodoState {
   final List<Todo> todoList;
+  final List<Todo> filteredTodoList;
+  final TodoFilter activeFilter;
 
-  const TodoReady(this.todoList);
+  const TodoReady({this.todoList, this.filteredTodoList, this.activeFilter});
 
   @override
-  String toString() => 'TodoLoaded { todoList: $todoList }';
+  String toString() => 'TodoReady with total : ${todoList.length} & activeFilter : $activeFilter & filtered total : ${filteredTodoList.length}';
 }
 
 class TodoFailed extends TodoState {

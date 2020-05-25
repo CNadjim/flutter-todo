@@ -7,6 +7,7 @@ import 'package:flutter_todo/src/bloc/todo/todos.bloc.dart';
 import 'package:flutter_todo/src/model/todo.dart';
 import 'package:flutter_todo/src/page/drawer/drawer.page.dart';
 import 'package:flutter_todo/src/page/todo/edit.page.dart';
+import 'package:flutter_todo/src/widget/filter_button.widget.dart';
 import 'package:flutter_todo/src/widget/loading.widget.dart';
 import 'package:flutter_todo/src/widget/todo_item.widget.dart';
 
@@ -15,12 +16,15 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Todo app par Nadjim")
+          title: Text("Todo app par Nadjim"),
+          actions: [
+            FilterButton()
+        ]
       ),
         drawer: DrawerPage(),
       body: BlocBuilder<TodoBloc, TodoState>( builder: (context, state) {
         if(state is TodoReady){
-          final todoList = state.todoList;
+          final todoList = state.filteredTodoList;
           if(todoList.length > 0 ){
             return ListView.builder(
                 itemCount: todoList.length,
@@ -37,25 +41,16 @@ class HomePage extends StatelessWidget {
                       },
                       onDismissed: (direction) {
                         if(direction == DismissDirection.endToStart) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) {
-                                return EditPage(key: null, todo: todo , onSave: (todoTask) {
-                                  BlocProvider.of<TodoBloc>(context).add(UpdateTodo(todo.copyWith(todo: todoTask)));
-                                });
-                              },
-                            ),
-                          );
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)  => EditPage(todo: todo)));
                         }
                         else if(direction == DismissDirection.startToEnd){
                           BlocProvider.of<TodoBloc>(context).add(DeleteTodo(todo));
-                          return Future.value(true);
                         }
-                        return Future.value(false);
                       });
                 });
           }
           else{
-            return Center(child: Text("Vous n'avez pas de chose à faire, feignasse !"));
+            return Center(child: Text("Il n'y a rien ici !"));
           }
         }else{
           return LoadingIndicator();

@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter_todo/src/model/todo.dart';
 
 abstract class TodoEvent {
@@ -13,7 +12,7 @@ class AddTodo extends TodoEvent {
   const AddTodo(this.todo);
 
   @override
-  String toString() => 'TodoAdded { todo: $todo }';
+  String toString() => 'add todo $todo';
 }
 
 class UpdateTodo extends TodoEvent {
@@ -22,7 +21,7 @@ class UpdateTodo extends TodoEvent {
   const UpdateTodo(this.todo);
 
   @override
-  String toString() => 'TodoUpdated { todo: $todo }';
+  String toString() => 'update todo $todo';
 }
 
 class DeleteTodo extends TodoEvent {
@@ -31,9 +30,18 @@ class DeleteTodo extends TodoEvent {
   const DeleteTodo(this.todo);
 
   @override
-  String toString() => 'TodoDeleted { todo: $todo }';
+  String toString() => 'delete todo $todo';
 }
 
 class ClearCompletedTodo extends TodoEvent {}
 
 class ToggleAllTodo extends TodoEvent {}
+
+class UpdateTodoFilter extends TodoEvent {
+  final TodoFilter filter;
+
+  const UpdateTodoFilter(this.filter);
+
+  @override
+  String toString() => 'update todo filter $filter';
+}

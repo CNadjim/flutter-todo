@@ -1,5 +1,7 @@
 import 'package:uuid/uuid.dart';
 
+enum TodoFilter { ALL, ACTIVE, COMPLETED }
+
 class Todo {
   String id;
   String todo;
@@ -38,3 +40,5 @@ class Todo {
   @override
   String toString() => '{ id: $id, todo: $todo, completed: $completed}';
 }
+
+

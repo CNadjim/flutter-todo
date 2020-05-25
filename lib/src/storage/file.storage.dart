@@ -16,8 +16,7 @@ class FileStorage {
     }
     final string = await file.readAsString();
     final json = JsonDecoder().convert(string);
-    List<Todo> todoList =  json.map<Todo>((todo) => Todo.fromJson(todo)).toList();
-    return todoList;
+    return json.map<Todo>((todo) => Todo.fromJson(todo)).toList();
   }
 
   Future<File> saveTodoList(List<Todo> todoList) async {
